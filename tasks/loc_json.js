@@ -55,6 +55,7 @@ module.exports = function(grunt) {
       for (var key in options) {
         config[key] = options[key];
       }
+      grunt.config.set(module, config);
     } else {
       grunt.config.set(module, options);  
     }
