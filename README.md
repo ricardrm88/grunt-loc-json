@@ -1,6 +1,6 @@
 # grunt-loc-json
 
-> Grunt plugin used to manage translations from localise.biz
+> Grunt plugin used to download translations from localise.biz
 
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
