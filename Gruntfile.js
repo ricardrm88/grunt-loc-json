@@ -23,7 +23,6 @@ module.exports = function(grunt) {
     },
 
     loc_json: {
-      default_options: {
         options: {
           json_dest: './localizations',
           projects: [
@@ -42,7 +41,6 @@ module.exports = function(grunt) {
         files: {
           'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
         }
-      }
     }
 
   });

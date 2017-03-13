@@ -96,16 +96,20 @@ module.exports = function(grunt) {
       cleanData.push(cleanDest + 'tmp/');
     }
 
-    grunt.config.set('unzip',unzipData);
-    grunt.config.set('curl', curlData);
-    grunt.config.set('http', httpData);
-    grunt.config.set('clean', cleanData);
+    if (Object.getOwnPropertyNames(httpData).length > 0) {    
+      grunt.config.set('http', httpData);
+      grunt.task.run('http');
+    }
+    
+    if (Object.getOwnPropertyNames(curlData).length > 0) {
+      grunt.config.set('unzip',unzipData);
+      grunt.config.set('curl', curlData);
+      grunt.config.set('clean', cleanData);
 
-    grunt.task.run('http');
-    grunt.task.run('curl');
-    grunt.task.run('unzip').then(function() {
-      copyFilesIfNeeded(grunt, options);
-    });
-
+      grunt.task.run('curl');  
+      grunt.task.run('unzip').then(function() {
+        copyFilesIfNeeded(grunt, options);
+      });
+    }
   });
 };
