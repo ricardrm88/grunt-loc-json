@@ -49,6 +49,18 @@ module.exports = function(grunt) {
       data[dest + 'tmp/translations.zip'] = 'https://localise.biz/api/export/archive/' + method + '.zip?index=id&fallback=en&key=' + key;
   }
 
+  function addOptionsToModule(grunt, module, options) {
+    var config = grunt.config.get(module);
+    if (config) {
+      for (var key in config) {
+        config[key] = options[key];
+      }
+    } else {
+      grunt.config.set(module, options);  
+    }
+    
+  }
+
   function copyFilesIfNeeded(grunt, options) {
     var copyOptions = {};
 
@@ -60,7 +72,7 @@ module.exports = function(grunt) {
         }
       }
 
-      grunt.config.set('copy', copyOptions);
+      addOptionsToModule(grunt, 'copy', copyOptions);
       grunt.task.run('copy');
       grunt.task.run('clean'); 
   }
@@ -102,15 +114,15 @@ module.exports = function(grunt) {
     }
     
     if (Object.getOwnPropertyNames(curlData).length > 0) {
-      grunt.config.set('unzip',unzipData);
-      grunt.config.set('curl', curlData);
-      grunt.config.set('clean', cleanData);
+      addOptionsToModule(grunt, 'unzip', unzipData);
+      addOptionsToModule(grunt, 'curl', curlData);
+      addOptionsToModule(grunt, 'clean', cleanData);
 
       grunt.task.run('curl');  
       grunt.task.run('unzip').then(function() {
         copyFilesIfNeeded(grunt, options);
 
-        grunt.config.set('fileTree', {
+        addOptionsToModule(grunt, 'fileTree', {
           your_target: {
             files: [
               {
