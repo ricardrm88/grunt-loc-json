@@ -52,13 +52,12 @@ module.exports = function(grunt) {
   function addOptionsToModule(grunt, module, options) {
     var config = grunt.config.get(module);
     if (config) {
-      for (var key in config) {
+      for (var key in options) {
         config[key] = options[key];
       }
     } else {
       grunt.config.set(module, options);  
     }
-    
   }
 
   function copyFilesIfNeeded(grunt, options) {
