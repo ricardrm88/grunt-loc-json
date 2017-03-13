@@ -39,7 +39,7 @@ module.exports = function(grunt) {
           ],
         },
         files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
+          
         }
     }
 
@@ -48,7 +48,6 @@ module.exports = function(grunt) {
   grunt.loadTasks('tasks');
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-clean');
 
   grunt.registerTask('default', ['loc_json', 'jshint']);
 

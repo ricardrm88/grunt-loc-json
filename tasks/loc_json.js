@@ -19,13 +19,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-then");
 
   function copyObject(dest){
-    var object = {};
+    var objects = {};
     
     grunt.file.expand(dest + "tmp/*").forEach(function (translationsDir) {
       if (!translationsDir.endsWith('.zip')){
         grunt.file.expand(translationsDir + "/locales/*/*").forEach(function (dir) {
           var filename = dir.split('/').reverse()[1] + '.json';
-          object = {
+          objects[filename] = {
             src: dir,
             dest: dest + filename
           };
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
       }
     });
 
-    return object;
+    return objects;
   }
 
   function localeGetText(key, dest) {
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
         var proj = options.projects[j];
         if (proj.method === 'json') {
           var dest = proj.dest + (proj.dest.endsWith('/') ? '' : '/');
-          copyOptions[proj.dest] = copyObject(dest);
+          copyOptions = copyObject(dest);
         }
       }
 
@@ -109,6 +109,19 @@ module.exports = function(grunt) {
       grunt.task.run('curl');  
       grunt.task.run('unzip').then(function() {
         copyFilesIfNeeded(grunt, options);
+
+        grunt.config.set('fileTree', {
+          your_target: {
+            files: [
+              {
+                src: [options.json_dest],
+                dest: options.json_dest + (options.json_dest.endsWith('/') ? '' : '/') + 'localizations.json'
+              }
+            ]
+          }
+        });
+        grunt.task.run('http');
+        grunt.task.run('fileTree');
       });
     }
   });
