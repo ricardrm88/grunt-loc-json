@@ -1,7 +1,7 @@
 {
   "name": "grunt-loc-json",
   "description": "Grunt plugin used to manage translations from localise.biz",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "homepage": "https://github.com/ricard/grunt-loc-json",
   "author": {
     "name": "Ricard",

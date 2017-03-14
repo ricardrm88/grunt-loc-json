@@ -76,7 +76,7 @@ module.exports = function(grunt) {
       grunt.task.run('copy');
   }
 
-  function addJsonLocales(position, isFirst, options) {
+  function addJsonLocales(position, isFirst, options, callback) {
     if (options.projects.length > position) {
       var currentProj = options.projects[position];
       if (currentProj.method === 'json') {
@@ -84,17 +84,21 @@ module.exports = function(grunt) {
             default_options: {
               options: {
                 inputFilesFolder : currentProj.dest,
-                outputBaseFile : isFirst ? 'js/empty.js' : options.localizationsFile,
+                outputBaseFile : isFirst ? 'grunt_loc_json_tmp/empty.js' : options.localizationsFile,
                 outputBaseFileVariable : 'localizationsJson.' + currentProj.name,
                 outputFile : options.localizationsFile,
               }
             }
           });
          grunt.task.run('filesToJavascript').then(function(){
-            addJsonLocales(position+1, false, options);
+            addJsonLocales(position+1, false, options, callback);
          });
       } else {
-        addJsonLocales(position+1, isFirst, options);
+        addJsonLocales(position+1, isFirst, options, callback);
+      }
+    } else {
+      if (callback) {
+        callback();
       }
     }
   }
@@ -144,8 +148,13 @@ module.exports = function(grunt) {
       grunt.task.run('curl');  
       grunt.task.run('unzip').then(function() {
         copyFilesIfNeeded(grunt, options);
+        grunt.file.write('grunt_loc_json_tmp/empty.js', '');
         grunt.task.run('clean'); 
-        addJsonLocales(0,true, options);
+
+        addJsonLocales(0, true, options, function(){
+          cleanData.push('grunt_loc_json_tmp/');
+          grunt.task.run('clean'); 
+        });
       });
     }
   });
