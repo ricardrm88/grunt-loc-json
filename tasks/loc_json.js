@@ -80,19 +80,25 @@ module.exports = function(grunt) {
     if (options.projects.length > position) {
       var currentProj = options.projects[position];
       if (currentProj.method === 'json') {
-         addOptionsToModule(grunt,'filesToJavascript', {
-            default_options: {
-              options: {
-                inputFilesFolder : currentProj.dest,
-                outputBaseFile : isFirst ? 'grunt_loc_json_tmp/empty.js' : options.localizationsFile,
-                outputBaseFileVariable : 'localizationsJson.' + currentProj.name,
-                outputFile : options.localizationsFile,
-              }
+        var outputVar = 'localizationsJson.' + currentProj.name;
+        var outputBase = isFirst ? 'grunt_loc_json_tmp/empty.js' : options.localizationsFile;
+        
+        var result = grunt.file.read(outputBase) + '\n' + outputVar + ' = {}\n';
+        grunt.file.write(outputBase, result);
+
+        addOptionsToModule(grunt,'filesToJavascript', {
+          default_options: {
+            options: {
+              inputFilesFolder : currentProj.dest,
+              outputBaseFile : outputBase,
+              outputBaseFileVariable : outputVar,
+              outputFile : options.localizationsFile,
             }
-          });
-         grunt.task.run('filesToJavascript').then(function(){
-            addJsonLocales(position+1, false, options, callback);
-         });
+          }
+        });
+       grunt.task.run('filesToJavascript').then(function(){
+          addJsonLocales(position+1, false, options, callback);
+       });
       } else {
         addJsonLocales(position+1, isFirst, options, callback);
       }
