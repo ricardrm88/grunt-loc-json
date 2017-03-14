@@ -14,17 +14,16 @@ module.exports = function(grunt) {
     jshint: {
       all: [
         'Gruntfile.js',
-        'tasks/*.js'
+        'tasks/loc_json.js'
       ],
       options: {
         jshintrc: '.jshintrc',
         reporterOutput: ''
       }
     },
-
     loc_json: {
         options: {
-          json_dest: './localizations',
+          localizationsFile: './localizations/results.js',
           projects: [
             {
               key: 'your-key-here',
@@ -32,23 +31,18 @@ module.exports = function(grunt) {
               method: 'ng-gettext'
             },
             {
+              name: 'XLF',
               key: 'your-key-here',
               dest: './localizations/XLF/',
               method: 'json'
             }
           ],
         },
-        files: {
-          
-        }
+        files: {}
     }
-
   });
 
   grunt.loadTasks('tasks');
-
   grunt.loadNpmTasks('grunt-contrib-jshint');
-
   grunt.registerTask('default', ['loc_json', 'jshint']);
-
 };

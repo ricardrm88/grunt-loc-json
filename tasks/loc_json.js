@@ -11,12 +11,12 @@
 module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-http');
-  grunt.loadNpmTasks('grunt-file-tree');
   grunt.loadNpmTasks('grunt-zip');
   grunt.loadNpmTasks('grunt-curl');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks("grunt-then");
+  grunt.loadNpmTasks('grunt-files-to-javascript-variables');
 
   function copyObject(dest){
     var objects = {};
@@ -74,14 +74,37 @@ module.exports = function(grunt) {
 
       addOptionsToModule(grunt, 'copy', copyOptions);
       grunt.task.run('copy');
-      grunt.task.run('clean'); 
+  }
+
+  function addJsonLocales(position, isFirst, options) {
+    if (options.projects.length > position) {
+      var currentProj = options.projects[position];
+      if (currentProj.method === 'json') {
+         addOptionsToModule(grunt,'filesToJavascript', {
+            default_options: {
+              options: {
+                inputFilesFolder : currentProj.dest,
+                outputBaseFile : isFirst ? 'js/empty.js' : options.localizationsFile,
+                outputBaseFileVariable : 'localizationsJson.' + currentProj.name,
+                outputFile : options.localizationsFile,
+              }
+            }
+          });
+         grunt.task.run('filesToJavascript').then(function(){
+            addJsonLocales(position+1, false, options);
+         });
+      } else {
+        addJsonLocales(position+1, isFirst, options);
+      }
+    }
   }
 
   grunt.registerMultiTask('loc_json', 'Grunt plugin used to download translations from localise.biz', function() {
     var options = this.options({
-      json_dest: './',
+      localizationsFile: './result.js',
       projects: [
         {
+          name:'default',
           key:'',
           method:'js',
           dest: './'
@@ -121,19 +144,8 @@ module.exports = function(grunt) {
       grunt.task.run('curl');  
       grunt.task.run('unzip').then(function() {
         copyFilesIfNeeded(grunt, options);
-
-        addOptionsToModule(grunt, 'fileTree', {
-          your_target: {
-            files: [
-              {
-                src: [options.json_dest],
-                dest: options.json_dest + (options.json_dest.endsWith('/') ? '' : '/') + 'localizations.json'
-              }
-            ]
-          }
-        });
-        grunt.task.run('http');
-        grunt.task.run('fileTree');
+        grunt.task.run('clean'); 
+        addJsonLocales(0,true, options);
       });
     }
   });
