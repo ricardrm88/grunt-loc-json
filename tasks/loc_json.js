@@ -68,7 +68,10 @@ module.exports = function(grunt) {
         var proj = options.projects[j];
         if (proj.method === 'json') {
           var dest = proj.dest + (proj.dest.endsWith('/') ? '' : '/');
-          copyOptions = copyObject(dest);
+          var newObject = copyObject(dest);
+          for (var key in newObject) {
+            copyOptions[key + proj.name] = newObject[key];
+          }
         }
       }
 
